@@ -18,6 +18,7 @@ namespace BookStore_API.DTOs
 
         public int? AuthorId { get; set; }
         public virtual AuthorDTO Author { get; set; }
+        public string File { get; internal set; }
     }
 
     public class BookCreateDTO
