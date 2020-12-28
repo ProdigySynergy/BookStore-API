@@ -1,0 +1,4 @@
+﻿<StaticWebAssets Version="1.0">
+  <ContentRoot BasePath="/" Path="C:\Users\sageads\Documents\Dev\DOTNET\BookStore\BookStore-UI\obj\Debug\net5.0\scopedcss\bundle\" />
+  <ContentRoot BasePath="_content/Blazored.Toast" Path="C:\Users\sageads\.nuget\packages\blazored.toast\3.1.2\build\..\staticwebassets\" />
+</StaticWebAssets>
