@@ -4,7 +4,7 @@
 #pragma warning disable 0649
 #pragma warning disable 0169
 
-namespace BookStore_UI.Pages.Authors
+namespace BookStore_UI.Pages.Books
 {
     #line hidden
     using System;
@@ -125,14 +125,14 @@ using System.IO;
 #line hidden
 #nullable disable
 #nullable restore
-#line 2 "C:\Users\sageads\Documents\Dev\DOTNET\BookStore\BookStore-UI\Pages\Authors\Edit.razor"
-           [Authorize(Roles = "Administrator")]
+#line 2 "C:\Users\sageads\Documents\Dev\DOTNET\BookStore\BookStore-UI\Pages\Books\Index.razor"
+           [Authorize]
 
 #line default
 #line hidden
 #nullable disable
-    [Microsoft.AspNetCore.Components.RouteAttribute("/authors/edit/{Id}")]
-    public partial class Edit : Microsoft.AspNetCore.Components.ComponentBase
+    [Microsoft.AspNetCore.Components.RouteAttribute("/books/")]
+    public partial class Index : Microsoft.AspNetCore.Components.ComponentBase
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
@@ -140,41 +140,20 @@ using System.IO;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 51 "C:\Users\sageads\Documents\Dev\DOTNET\BookStore\BookStore-UI\Pages\Authors\Edit.razor"
+#line 86 "C:\Users\sageads\Documents\Dev\DOTNET\BookStore\BookStore-UI\Pages\Books\Index.razor"
        
-    [Parameter]
-    public string Id { get; set; }
+    private IList<Book> Model;
 
-    private Author Model = new Author();
-    private bool isSuccess = true;
-    protected override async Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
-        int id = Convert.ToInt32(Id);
-        Model = await _repo.Get(Endpoints.AuthorsEndpoint, id);
-    }
-
-    private async Task EditAuthor()
-    {
-        isSuccess = await _repo.Update(Endpoints.AuthorsEndpoint, Model, Model.Id);
-        if (isSuccess)
-        {
-            _toastService.ShowWarning("Author Updated Successfully", "");
-            BackToList();
-        }
-
-    }
-
-    private void BackToList()
-    {
-        _navManager.NavigateTo("/authors/");
+        Model = await _repo.Get(Endpoints.BooksEndpoint);
     }
 
 #line default
 #line hidden
 #nullable disable
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private IToastService _toastService { get; set; }
-        [global::Microsoft.AspNetCore.Components.InjectAttribute] private NavigationManager _navManager { get; set; }
-        [global::Microsoft.AspNetCore.Components.InjectAttribute] private IAuthorRepository _repo { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private IBookRepository _repo { get; set; }
     }
 }
 #pragma warning restore 1591

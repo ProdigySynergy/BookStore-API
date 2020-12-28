@@ -4,7 +4,7 @@
 #pragma warning disable 0649
 #pragma warning disable 0169
 
-namespace BookStore_UI.Pages.Authors
+namespace BookStore_UI.Pages.Books
 {
     #line hidden
     using System;
@@ -125,14 +125,14 @@ using System.IO;
 #line hidden
 #nullable disable
 #nullable restore
-#line 2 "C:\Users\sageads\Documents\Dev\DOTNET\BookStore\BookStore-UI\Pages\Authors\Edit.razor"
+#line 2 "C:\Users\sageads\Documents\Dev\DOTNET\BookStore\BookStore-UI\Pages\Books\Create.razor"
            [Authorize(Roles = "Administrator")]
 
 #line default
 #line hidden
 #nullable disable
-    [Microsoft.AspNetCore.Components.RouteAttribute("/authors/edit/{Id}")]
-    public partial class Edit : Microsoft.AspNetCore.Components.ComponentBase
+    [Microsoft.AspNetCore.Components.RouteAttribute("/books/create/")]
+    public partial class Create : Microsoft.AspNetCore.Components.ComponentBase
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
@@ -140,33 +140,81 @@ using System.IO;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 51 "C:\Users\sageads\Documents\Dev\DOTNET\BookStore\BookStore-UI\Pages\Authors\Edit.razor"
+#line 72 "C:\Users\sageads\Documents\Dev\DOTNET\BookStore\BookStore-UI\Pages\Books\Create.razor"
        
-    [Parameter]
-    public string Id { get; set; }
-
-    private Author Model = new Author();
+    private Book Model = new Book();
+    private IList<Author> Authors;
+    private IBrowserFile file;
     private bool isSuccess = true;
+    private bool isInvalidFileType = false;
+    private string imageDataURL;
+    private Stream msFile;
+
     protected override async Task OnInitializedAsync()
     {
-        int id = Convert.ToInt32(Id);
-        Model = await _repo.Get(Endpoints.AuthorsEndpoint, id);
+        Authors = await _authorRepo.Get(Endpoints.AuthorsEndpoint);
     }
 
-    private async Task EditAuthor()
+    private async Task HandleCreate()
     {
-        isSuccess = await _repo.Update(Endpoints.AuthorsEndpoint, Model, Model.Id);
-        if (isSuccess)
+        if (!isInvalidFileType)
         {
-            _toastService.ShowWarning("Author Updated Successfully", "");
-            BackToList();
-        }
+            if (file != null)
+            {
+                var ext = Path.GetExtension(file.Name);
+                var picId = Guid.NewGuid().ToString().Replace("-", "");
+                var picName = $"{picId}{ext}";
 
+                await _fileUpload.UploadFile(msFile, picName);
+
+                Model.Image = picName;
+            }
+
+            isSuccess = await _repo.Create(Endpoints.BooksEndpoint, Model);
+            if (isSuccess)
+            {
+                _toastService.ShowSuccess("Book Created Successfully", "");
+                BackToList();
+            }
+        }
     }
+
+    private async Task HandleFileSelection(InputFileChangeEventArgs e)
+    {
+        file = e.File;
+        if (file != null)
+        {
+            var ext = Path.GetExtension(file.Name);
+            if (ext.Contains("jpg") || ext.Contains("png") || ext.Contains("jpeg"))
+            {
+                msFile = file.OpenReadStream();
+
+                var resizedImageFile = await file.RequestImageFileAsync("image/png",
+            100, 100);
+
+                var buffer = new byte[resizedImageFile.Size];
+                await resizedImageFile.OpenReadStream().ReadAsync(buffer);
+
+                var imageBase64Data = Convert.ToBase64String(buffer);
+                imageDataURL = string.Format("data:image/png;base64,{0}", imageBase64Data);
+                isInvalidFileType = false;
+            }
+            else
+            {
+                isInvalidFileType = true;
+                imageDataURL = string.Empty;
+            }
+        }
+        else
+        {
+            isInvalidFileType = false;
+        }
+    }
+
 
     private void BackToList()
     {
-        _navManager.NavigateTo("/authors/");
+        _navManager.NavigateTo("/books/");
     }
 
 #line default
@@ -174,7 +222,9 @@ using System.IO;
 #nullable disable
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private IToastService _toastService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private NavigationManager _navManager { get; set; }
-        [global::Microsoft.AspNetCore.Components.InjectAttribute] private IAuthorRepository _repo { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private IFileUpload _fileUpload { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private IAuthorRepository _authorRepo { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private IBookRepository _repo { get; set; }
     }
 }
 #pragma warning restore 1591

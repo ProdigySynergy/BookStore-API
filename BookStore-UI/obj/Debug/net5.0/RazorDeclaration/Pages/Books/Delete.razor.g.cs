@@ -4,7 +4,7 @@
 #pragma warning disable 0649
 #pragma warning disable 0169
 
-namespace BookStore_UI.Pages.Authors
+namespace BookStore_UI.Pages.Books
 {
     #line hidden
     using System;
@@ -125,14 +125,14 @@ using System.IO;
 #line hidden
 #nullable disable
 #nullable restore
-#line 2 "C:\Users\sageads\Documents\Dev\DOTNET\BookStore\BookStore-UI\Pages\Authors\Edit.razor"
+#line 2 "C:\Users\sageads\Documents\Dev\DOTNET\BookStore\BookStore-UI\Pages\Books\Delete.razor"
            [Authorize(Roles = "Administrator")]
 
 #line default
 #line hidden
 #nullable disable
-    [Microsoft.AspNetCore.Components.RouteAttribute("/authors/edit/{Id}")]
-    public partial class Edit : Microsoft.AspNetCore.Components.ComponentBase
+    [Microsoft.AspNetCore.Components.RouteAttribute("/books/delete/{Id}")]
+    public partial class Delete : Microsoft.AspNetCore.Components.ComponentBase
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
@@ -140,25 +140,27 @@ using System.IO;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 51 "C:\Users\sageads\Documents\Dev\DOTNET\BookStore\BookStore-UI\Pages\Authors\Edit.razor"
+#line 90 "C:\Users\sageads\Documents\Dev\DOTNET\BookStore\BookStore-UI\Pages\Books\Delete.razor"
        
     [Parameter]
     public string Id { get; set; }
 
-    private Author Model = new Author();
+    private Book Model = new Book();
     private bool isSuccess = true;
+
     protected override async Task OnInitializedAsync()
     {
         int id = Convert.ToInt32(Id);
-        Model = await _repo.Get(Endpoints.AuthorsEndpoint, id);
+        Model = await _repo.Get(Endpoints.BooksEndpoint, id);
     }
 
-    private async Task EditAuthor()
+    private async Task DeleteBook()
     {
-        isSuccess = await _repo.Update(Endpoints.AuthorsEndpoint, Model, Model.Id);
+        _fileUpload.RemoveFile(Model.Image);
+        isSuccess = await _repo.Delete(Endpoints.BooksEndpoint, Model.Id);
         if (isSuccess)
         {
-            _toastService.ShowWarning("Author Updated Successfully", "");
+            _toastService.ShowError("Book Deleted Successfully", "");
             BackToList();
         }
 
@@ -166,15 +168,17 @@ using System.IO;
 
     private void BackToList()
     {
-        _navManager.NavigateTo("/authors/");
+        _navManager.NavigateTo("/books/");
     }
+
 
 #line default
 #line hidden
 #nullable disable
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private IToastService _toastService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private IFileUpload _fileUpload { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private NavigationManager _navManager { get; set; }
-        [global::Microsoft.AspNetCore.Components.InjectAttribute] private IAuthorRepository _repo { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private IBookRepository _repo { get; set; }
     }
 }
 #pragma warning restore 1591
